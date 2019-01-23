@@ -18,10 +18,26 @@ mongoose.Promise = global.Promise;
 
 //starting an express application
 const app = express();
-app.get('/',(req,res)=>{
-    res.send(`server started on port:${port}`);
-});
 
+//setting view engine to ejs
+app.set("view engine","ejs");
+
+app.get('/',(req,res)=>{
+    res.render('index');
+
+});
+app.get('/upload',(req,res)=>{
+    res.render('upload');
+
+});
+app.get('/preview',(req,res)=>{
+    res.render('preview');
+
+});
+app.get('/display',(req,res)=>{
+    res.render('display');
+
+});
 //body parser parses the url encoded and json data in proper format
 
 app.use(bodyParser.urlencoded({extended : true}));
@@ -42,20 +58,12 @@ app.use((req,res,next)=>{
 const storage = multer.diskStorage({
     destination: './public/uploads/',
      filename: (req, file, callback) =>{
+        console.log('#############',file)
+        console.log(req)
       req.newFileName = new Date().toISOString() + file.originalname;
       callback(null, req.newFileName);
     }
   });
-
-//   //setting storage engine for converted images
-
-//   const newstorage = multer.diskStorage({
-//     destination: './public/convertedImages/',
-//      filename: (req, file, callback) =>{
-//       req.newFileName = new Date().toISOString() + file.originalname;
-//       callback(null, req.newFileName);
-//     }
-//   });
 
   //setting multer to accept the image format files
   const fileFilter = (req, file, callback) => {
@@ -83,7 +91,7 @@ app.use('/uploads',express.static('uploads'));
 app.use('/public/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
   //this method allows you to upload single image using multer
-app.post('/convert',upload.single('image'),(req, res) => {
+app.post('/upload',upload.single('image'),(req, res) => {
     console.log('entered')
  
     const image = new Image ({
@@ -94,6 +102,7 @@ app.post('/convert',upload.single('image'),(req, res) => {
     
     image
     .save()
+
     .then(result => {
         Jimp.read('./public/uploads/'+image.image)
         .then(photo => {
@@ -132,11 +141,12 @@ app.post('/convert',upload.single('image'),(req, res) => {
           console.error(err);
         });
         console.log(result);
-        res.status(200).json({
-            message : "Image uploaded ",
-            uploadedImage : image,
+        // res.status(200).json({
+        //     message : "Image uploaded ",
+        //     uploadedImage : image,
            
-        });
+        // });
+        res.redirect('preview')
     
     })
     .catch(err => {
