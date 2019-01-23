@@ -5,7 +5,9 @@ const multer = require('multer');
 const Image = require('./model/image');
 const path=require('path');
 //javascript image manipulation module to convert the image
-const Jimp = require('jimp');
+const Jimp = require('jimp'),
+    fs = require('fs'),
+    url = require('url');
 
 //body parser used to parse the data
 const bodyParser = require('body-parser');
@@ -23,6 +25,7 @@ const app = express();
 app.set("view engine","ejs");
 
 app.get('/',(req,res)=>{
+   
     res.render('index');
 
 });
@@ -31,10 +34,24 @@ app.get('/upload',(req,res)=>{
 
 });
 app.get('/preview',(req,res)=>{
-    res.render('preview');
-
+   
+  res.render('preview')
 });
 app.get('/display',(req,res)=>{
+       // the url to parse the requested url and get the image name
+     const query = url.parse(req.url,true).query;
+     const  pic = query.image;
+ 
+    //read the image using fs and send the image content back in the response
+    fs.readFile('./public/convertedImages/gallery.jpg',(err, content)=> {
+        if (err) {
+            console.log(err);
+            res.end("No such image");    
+        } else {
+            //specify the content type in the response will be an image
+            res.end(content);
+        }
+    });
     res.render('display');
 
 });
@@ -93,7 +110,6 @@ app.use('/public/uploads', express.static(path.join(__dirname, 'public/uploads')
   //this method allows you to upload single image using multer
 app.post('/upload',upload.single('image'),(req, res) => {
     console.log('entered')
- 
     const image = new Image ({
         _id : new mongoose.Types.ObjectId(),
         title : req.body.title,
@@ -107,7 +123,7 @@ app.post('/upload',upload.single('image'),(req, res) => {
         Jimp.read('./public/uploads/'+image.image)
         .then(photo => {
           return photo
-            .resize(755, 450) // resize
+            .resize(755, 450, Jimp.RESIZE_BEZIER) // resize
             .write('./public/convertedImages/horizontal.jpg'); // save
         })
         .catch(err => {
@@ -116,7 +132,7 @@ app.post('/upload',upload.single('image'),(req, res) => {
         Jimp.read('./public/uploads/'+image.image)
         .then(photo => {
           return photo
-            .resize(365, 450) // resize
+            .resize(365, 450, Jimp.RESIZE_BEZIER) // resize
             .write('./public/convertedImages/vertical.jpg'); // save
         })
         .catch(err => {
@@ -125,7 +141,7 @@ app.post('/upload',upload.single('image'),(req, res) => {
         Jimp.read('./public/uploads/'+image.image)
         .then(photo => {
           return photo
-            .resize(365, 212) // resize
+            .resize(365, 212, Jimp.RESIZE_BEZIER) // resize
             .write('./public/convertedImages/horizontal-small.jpg'); // save
         })
         .catch(err => {
@@ -134,18 +150,13 @@ app.post('/upload',upload.single('image'),(req, res) => {
         Jimp.read('./public/uploads/'+image.image)
         .then(photo => {
           return photo
-            .resize(380, 380) // resize
+            .resize(380, 380, Jimp.RESIZE_BEZIER) // resize
             .write('./public/convertedImages/gallery.jpg'); // save
         })
         .catch(err => {
           console.error(err);
         });
         console.log(result);
-        // res.status(200).json({
-        //     message : "Image uploaded ",
-        //     uploadedImage : image,
-           
-        // });
         res.redirect('preview')
     
     })
