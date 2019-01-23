@@ -4,6 +4,8 @@ const port = process.env.PORT | 3000;
 const multer = require('multer'); 
 const Image = require('./model/image');
 const path=require('path');
+//javascript image manipulation module to convert the image
+const Jimp = require('jimp');
 
 //body parser used to parse the data
 const bodyParser = require('body-parser');
@@ -83,6 +85,42 @@ app.post('/convert',upload.single('image'),(req, res) => {
     image
     .save()
     .then(result => {
+        Jimp.read('./public/uploads/'+image.image)
+        .then(photo => {
+          return photo
+            .resize(755, 450) // resize
+            .write('horizontal.jpg'); // save
+        })
+        .catch(err => {
+          console.error(err);
+        });
+        Jimp.read('./public/uploads/'+image.image)
+        .then(photo => {
+          return photo
+            .resize(365, 450) // resize
+            .write('vertical.jpg'); // save
+        })
+        .catch(err => {
+          console.error(err);
+        });
+        Jimp.read('./public/uploads/'+image.image)
+        .then(photo => {
+          return photo
+            .resize(365, 212) // resize
+            .write('horizontal-small.jpg'); // save
+        })
+        .catch(err => {
+          console.error(err);
+        });
+        Jimp.read('./public/uploads/'+image.image)
+        .then(photo => {
+          return photo
+            .resize(380, 380) // resize
+            .write('gallery.jpg'); // save
+        })
+        .catch(err => {
+          console.error(err);
+        });
         console.log(result);
         res.status(200).json({
             message : "Image uploaded ",
