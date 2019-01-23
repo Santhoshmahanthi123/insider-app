@@ -47,6 +47,16 @@ const storage = multer.diskStorage({
     }
   });
 
+//   //setting storage engine for converted images
+
+//   const newstorage = multer.diskStorage({
+//     destination: './public/convertedImages/',
+//      filename: (req, file, callback) =>{
+//       req.newFileName = new Date().toISOString() + file.originalname;
+//       callback(null, req.newFileName);
+//     }
+//   });
+
   //setting multer to accept the image format files
   const fileFilter = (req, file, callback) => {
     // reject a file if it is not matching this format
@@ -89,7 +99,7 @@ app.post('/convert',upload.single('image'),(req, res) => {
         .then(photo => {
           return photo
             .resize(755, 450) // resize
-            .write('horizontal.jpg'); // save
+            .write('./public/convertedImages/horizontal.jpg'); // save
         })
         .catch(err => {
           console.error(err);
@@ -98,7 +108,7 @@ app.post('/convert',upload.single('image'),(req, res) => {
         .then(photo => {
           return photo
             .resize(365, 450) // resize
-            .write('vertical.jpg'); // save
+            .write('./public/convertedImages/vertical.jpg'); // save
         })
         .catch(err => {
           console.error(err);
@@ -107,7 +117,7 @@ app.post('/convert',upload.single('image'),(req, res) => {
         .then(photo => {
           return photo
             .resize(365, 212) // resize
-            .write('horizontal-small.jpg'); // save
+            .write('./public/convertedImages/horizontal-small.jpg'); // save
         })
         .catch(err => {
           console.error(err);
@@ -116,7 +126,7 @@ app.post('/convert',upload.single('image'),(req, res) => {
         .then(photo => {
           return photo
             .resize(380, 380) // resize
-            .write('gallery.jpg'); // save
+            .write('./public/convertedImages/gallery.jpg'); // save
         })
         .catch(err => {
           console.error(err);
