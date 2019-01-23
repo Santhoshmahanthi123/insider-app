@@ -4,6 +4,8 @@ const port = process.env.PORT | 3000;
 const multer = require('multer'); 
 //body parser used to parse the data
 const bodyParser = require('body-parser');
+//mongoose module interacts with mongoDb database we can acces the database and write schemas in mongoose.
+const mongoose = require('mongoose');
 
 //starting an express application
 const app = express();
