@@ -2,6 +2,8 @@ const express = require('express');
 const port = process.env.PORT | 3000;
 //multer module is for uploading files like images
 const multer = require('multer'); 
+const Image = require('./model/image');
+
 //body parser used to parse the data
 const bodyParser = require('body-parser');
 //mongoose module interacts with mongoDb database we can acces the database and write schemas in mongoose.
@@ -65,9 +67,32 @@ app.use((req,res,next)=>{
 
 
   //this method allows you to upload single image using multer
-app.post('/convert',upload.single('image'),(req,res)=>{
-
-})
+app.post('/convert',upload.single('image'),(req, res) => {
+ 
+    const image = new Image ({
+        _id : new mongoose.Types.ObjectId(),
+        title : req.body.title,
+        image : req.newFileName,
+     });
+    
+    image
+    .save()
+    .then(result => {
+        console.log(result);
+        res.status(200).json({
+            message : "Image uploaded ",
+            uploadedImage : image,
+           
+        });
+    
+    })
+    .catch(err => {
+        console.log(err);
+        res.status(500).json({
+            error : err
+        });
+    });
+});
 //listening to the port
 app.listen(port,()=>{
     console.log(`server started on port:${port}`)
