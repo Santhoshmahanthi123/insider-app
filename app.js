@@ -105,7 +105,7 @@ const storage = multer.diskStorage({
 app.use('/uploads',express.static('uploads'));
 
 //To direct the image to be uploaded in to given directory
-app.use('/public/uploads', express.static(path.join(__dirname, 'public/uploads')));
+app.use('/public/convertedImages', express.static(path.join(__dirname, 'public/convertedImages')));
 
   //this method allows you to upload single image using multer
 app.post('/upload',upload.single('image'),(req, res) => {
