@@ -8,3 +8,5 @@ This a simple web application which is used to upload an image of 1024*1024 size
 
 # pre-requesites 
 You should have nodejs of version 8.1.0 and mongoDb should be installed in your local machine.
+
+              
