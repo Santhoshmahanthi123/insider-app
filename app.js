@@ -3,16 +3,38 @@ const port = process.env.PORT | 3000;
 //multer module is for uploading files like images
 const multer = require('multer'); 
 const Image = require('./model/image');
+const path=require('path');
 
 //body parser used to parse the data
 const bodyParser = require('body-parser');
 //mongoose module interacts with mongoDb database we can acces the database and write schemas in mongoose.
 const mongoose = require('mongoose');
+//to connect to the database
+mongoose.connect('mongodb://localhost:27017/insider',{useNewUrlParser: true})
+//removing deprecation warnings 
+mongoose.Promise = global.Promise;
 
 //starting an express application
 const app = express();
 app.get('/',(req,res)=>{
     res.send(`server started on port:${port}`);
+});
+
+//body parser parses the url encoded and json data in proper format
+
+app.use(bodyParser.urlencoded({extended : true}));
+app.use(bodyParser.json());
+
+//giving CORS(Cross Origin Resource Sharing) permissions to anyone who requests to these end points
+app.use((req,res,next)=>{
+    //* will give access to any origin
+ res.header('Access-Control-Allow-Origin','*');
+//  res.header('Access-Control-Allow-Origin','Origin,X-Requested-With,Content-Type,Accept');
+//  if(req.method === 'OPTIONS'){
+//      res.header('Access-Control-Allow-Methods','PUT, POST, PATCH, DELETE, GET');
+//      return res.status(200).json({});
+//  }
+ next();
 });
 // Set The Storage Engine
 const storage = multer.diskStorage({
@@ -48,26 +70,9 @@ app.use('/uploads',express.static('uploads'));
 //To direct the image to be uploaded in to given directory
 app.use('/public/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
-//body parser parses the url encoded and json data in proper format
-
-app.use(bodyParser.urlencoded({extended : true}));
-app.use(bodyParser.json());
-
-//giving CORS(Cross Origin Resource Sharing) permissions to anyone who requests to these end points
-app.use((req,res,next)=>{
-    //* will give access to any origin
- res.header('Access-Control-Allow-Origin','*');
-//  res.header('Access-Control-Allow-Origin','Origin,X-Requested-With,Content-Type,Accept');
-//  if(req.method === 'OPTIONS'){
-//      res.header('Access-Control-Allow-Methods','PUT, POST, PATCH, DELETE, GET');
-//      return res.status(200).json({});
-//  }
- next();
-});
-
-
   //this method allows you to upload single image using multer
 app.post('/convert',upload.single('image'),(req, res) => {
+    console.log('entered')
  
     const image = new Image ({
         _id : new mongoose.Types.ObjectId(),
