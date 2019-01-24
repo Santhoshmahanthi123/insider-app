@@ -1,6 +1,6 @@
 require('dotenv').config();
 const express = require('express');
-const port = process.env.PORT | 3000;
+const port = process.env.PORT || 3000;
 //multer module is for uploading files like images
 const multer = require('multer'); 
 const Image = require('./model/image');
