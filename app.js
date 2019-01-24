@@ -1,9 +1,11 @@
+require('dotenv').config();
 const express = require('express');
 const port = process.env.PORT | 3000;
 //multer module is for uploading files like images
 const multer = require('multer'); 
 const Image = require('./model/image');
 const path=require('path');
+const DBURL = process.env.DBURL;
 //javascript image manipulation module to convert the image
 const Jimp = require('jimp'),
     fs = require('fs'),
@@ -14,7 +16,7 @@ const bodyParser = require('body-parser');
 //mongoose module interacts with mongoDb database we can acces the database and write schemas in mongoose.
 const mongoose = require('mongoose');
 //to connect to the database
-mongoose.connect('mongodb://localhost:27017/insider',{useNewUrlParser: true})
+mongoose.connect(DBURL,{useNewUrlParser: true})
 //removing deprecation warnings 
 mongoose.Promise = global.Promise;
 
@@ -75,8 +77,6 @@ app.use((req,res,next)=>{
 const storage = multer.diskStorage({
     destination: './public/uploads/',
      filename: (req, file, callback) =>{
-        console.log('#############',file)
-        console.log(req)
       req.newFileName = new Date().toISOString() + file.originalname;
       callback(null, req.newFileName);
     }
